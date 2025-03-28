@@ -331,6 +331,9 @@ if __name__ == "__main__":
         ]  # Extract the code name if the file length is too long.
         input_extension = process_dir.split(".")[-1]
         output_path = os.path.join(store_dir, append_part)
+        if os.path.exists(output_path):
+            shutil.rmtree(output_path)
+        os.makedirs(output_path)
         loguru_logger.debug(f"{output_path}")
 
         if (
