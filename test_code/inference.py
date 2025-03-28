@@ -4,6 +4,7 @@ This is file is to execute the inference for a single image or a folder input
 
 import argparse
 import time
+import loguru
 import numpy as np
 import os, sys, cv2, shutil, warnings
 from tqdm import tqdm
@@ -330,11 +331,13 @@ if __name__ == "__main__":
             0
         ]  # Extract the code name if the file length is too long.
         input_extension = process_dir.split(".")[-1]
+        loguru_logger.info(f"Cur ext: {input_extension}")
         output_path = os.path.join(store_dir, append_part)
         if os.path.exists(output_path):
             shutil.rmtree(output_path)
         os.makedirs(output_path)
-        loguru_logger.debug(f"{output_path}")
+        loguru_logger.info(f"Processing {process_dir}")
+        loguru_logger.info(f"Output path: {output_path}")
 
         if (
             input_extension in supported_img_extension
@@ -342,6 +345,7 @@ if __name__ == "__main__":
             output_path = os.path.join(
                 output_path, filename + "_" + str(scale) + "x.png"
             )  # Output fixed to be png
+            loguru_logger.info(f"Output file: {output_path}")
             # In default, we will automatically use crop to match 4x size
             super_resolve_img(
                 generator,
