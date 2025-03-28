@@ -10,6 +10,7 @@ import os, sys, cv2, shutil, warnings
 from tqdm import tqdm
 import torch
 from torchvision.transforms import ToTensor
+import torchvision
 from torchvision.utils import save_image
 import ffmpegcv
 from moviepy.video.io.ffmpeg_writer import FFMPEG_VideoWriter
@@ -83,13 +84,15 @@ def super_resolve_img(
 
     # Store the generated result
     loguru_logger.info(f"Saving image to {output_path}")
-    if device != "cpu":
-        with torch.cuda.amp.autocast():
-            if output_path is not None:
-                save_image(super_resolved_img, output_path)
-    else:
-        if output_path is not None:
-            save_image(super_resolved_img, output_path)
+    image = torchvision.transforms.ToPILImage()(super_resolved_img.cpu())
+    image.save(output_path)
+    # if device != "cpu":
+    #     with torch.cuda.amp.autocast():
+    #         if output_path is not None:
+    #             save_image(super_resolved_img, output_path)
+    # else:
+    #     if output_path is not None:
+    #         save_image(super_resolved_img, output_path)
 
     # Empty the cache everytime you finish processing one image
     if device != "cpu":
@@ -376,7 +379,7 @@ if __name__ == "__main__":
 
         else:
             loguru_logger.info(
-                f"This single file {filename}'s input format is not what we support!"
+                f"This single file {process_dir}'s input format is not what we support!"
             )
             return
 
