@@ -14,6 +14,8 @@ import ffmpegcv
 from moviepy.video.io.ffmpeg_writer import FFMPEG_VideoWriter
 from moviepy.editor import VideoFileClip
 
+from loguru import logger as loguru_logger
+
 warnings.simplefilter("default")
 os.environ["PYTHONWARNINGS"] = "default"
 
@@ -363,9 +365,10 @@ if __name__ == "__main__":
             )
 
         else:
-            raise NotImplementedError(
-                "This single file input format is not what we support!"
+            loguru_logger.warn(
+                f"This single file {filename}'s input format is not what we support!"
             )
+            return
 
     start = time.time()
 
