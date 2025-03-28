@@ -324,18 +324,20 @@ if __name__ == "__main__":
     generator = generator.to(dtype=weight_dtype)
 
     # Should have a for loop here
-    def inner_loop(process_dir):
+    def inner_loop(process_dir, append_part):
         # First, check whether this single file is image or video
         filename = os.path.split(process_dir)[-1].split(".")[
             0
         ]  # Extract the code name if the file length is too long.
         input_extension = process_dir.split(".")[-1]
+        output_path = os.path.join(store_dir, append_part)
+        loguru_logger.debug(f"{output_path}")
 
         if (
             input_extension in supported_img_extension
         ):  # If the input path is single image
             output_path = os.path.join(
-                store_dir, filename + "_" + str(scale) + "x.png"
+                output_path, filename + "_" + str(scale) + "x.png"
             )  # Output fixed to be png
             # In default, we will automatically use crop to match 4x size
             super_resolve_img(
@@ -352,7 +354,7 @@ if __name__ == "__main__":
             input_extension in supported_video_extension
         ):  # If the input path is single video
             output_path = os.path.join(
-                store_dir, filename + "_" + str(scale) + "x.mp4"
+                output_path, filename + "_" + str(scale) + "x.mp4"
             )  # Output fixed to be mp4
             super_resolve_video(
                 generator,
@@ -375,18 +377,19 @@ if __name__ == "__main__":
     # Take the input path and do inference
     if os.path.isdir(input_dir):  # If the input is a directory, we will iterate it
 
-        def rec_loop(input_dir):
-            if os.path.isdir(input_dir):
-                for name in sorted(os.listdir(input_dir)):
-                    cur_path = os.path.join(input_dir, name)
-                    rec_loop(cur_path)
+        def rec_loop(filename, append_part=""):
+            if os.path.isdir(filename):
+                for name in sorted(os.listdir(filename)):
+                    cur_path = os.path.join(filename, name)
+                    cur_part = os.path.join(append_part, name)
+                    rec_loop(cur_path, append_part=cur_part)
             else:
-                inner_loop(input_dir)
+                inner_loop(filename, append_part)
 
-        rec_loop(input_dir)
+        rec_loop(input_dir, "")
 
     else:  # If the input is a single file (img/video), we will process it directly and write on the same folder
-        inner_loop(input_dir)
+        inner_loop(input_dir, "")
 
     end = time.time()
     print("Total inference time spent is ", end - start)
