@@ -84,15 +84,23 @@ def super_resolve_img(
 
     # Store the generated result
     loguru_logger.info(f"Saving image to {output_path}")
-    image = torchvision.transforms.ToPILImage()(super_resolved_img.cpu())
-    image.convert("RGB").save(output_path)
-    # if device != "cpu":
-    #     with torch.cuda.amp.autocast():
-    #         if output_path is not None:
-    #             save_image(super_resolved_img, output_path)
-    # else:
-    #     if output_path is not None:
-    #         save_image(super_resolved_img, output_path)
+
+    # image = torchvision.transforms.ToPILImage()(super_resolved_img.cpu())
+    # image.convert("RGB").save(output_path)
+    def custom_save_image(image, full_path):
+        try:
+            save_image(image, full_path)
+            loguru_logger.info(f"图片已成功保存到 {full_path}")
+        except Exception as e:
+            loguru_logger.error(f"保存图片时出错: {e}")
+
+    if device != "cpu":
+        with torch.cuda.amp.autocast():
+            if output_path is not None:
+                custom_save_image(super_resolved_img, output_path)
+    else:
+        if output_path is not None:
+            custom_save_image(super_resolved_img, output_path)
 
     # Empty the cache everytime you finish processing one image
     if device != "cpu":
@@ -337,9 +345,8 @@ if __name__ == "__main__":
         input_extension = process_dir.split(".")[-1]
         loguru_logger.info(f"Cur ext: {input_extension}")
         output_path = os.path.join(store_dir, append_part)
-        if os.path.exists(output_path):
-            shutil.rmtree(output_path)
-        os.makedirs(output_path)
+        if not os.path.exists(output_path):
+            os.makedirs(output_path)
         loguru_logger.info(f"Processing {process_dir}")
         loguru_logger.info(f"Output path: {output_path}")
 
