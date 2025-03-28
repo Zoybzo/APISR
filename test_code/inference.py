@@ -365,7 +365,7 @@ if __name__ == "__main__":
             )
 
         else:
-            loguru_logger.warn(
+            loguru_logger.info(
                 f"This single file {filename}'s input format is not what we support!"
             )
             return
