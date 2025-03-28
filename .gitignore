@@ -30,3 +30,5 @@ tmp/*
 !__assets__/*
 !__assets__/visual_results/*
 !requirements.txt
+
+pretrained/
