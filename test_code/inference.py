@@ -374,8 +374,16 @@ if __name__ == "__main__":
 
     # Take the input path and do inference
     if os.path.isdir(input_dir):  # If the input is a directory, we will iterate it
-        for filename in sorted(os.listdir(input_dir)):
-            inner_loop(os.path.join(input_dir, filename))
+
+        def rec_loop(input_dir):
+            if os.path.isdir(input_dir):
+                for name in sorted(os.listdir(input_dir)):
+                    cur_path = os.path.join(input_dir, name)
+                    rec_loop(cur_path)
+            else:
+                inner_loop(input_dir)
+
+        rec_loop(input_dir)
 
     else:  # If the input is a single file (img/video), we will process it directly and write on the same folder
         inner_loop(input_dir)
