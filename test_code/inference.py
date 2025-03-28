@@ -378,13 +378,13 @@ if __name__ == "__main__":
     if os.path.isdir(input_dir):  # If the input is a directory, we will iterate it
 
         def rec_loop(filename, append_part=""):
-            if os.path.isdir(filename):
-                for name in sorted(os.listdir(filename)):
-                    cur_path = os.path.join(filename, name)
+            for name in sorted(os.listdir(filename)):
+                cur_path = os.path.join(filename, name)
+                if os.path.isdir(cur_path):
                     cur_part = os.path.join(append_part, name)
                     rec_loop(cur_path, append_part=cur_part)
-            else:
-                inner_loop(filename, append_part)
+                else:
+                    inner_loop(cur_path, append_part)
 
         rec_loop(input_dir, "")
 
