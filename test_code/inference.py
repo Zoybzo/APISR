@@ -78,10 +78,11 @@ def super_resolve_img(
     img_lr = img_lr.to(dtype=weight_dtype)
 
     # Model inference
-    # print("lr shape is ", img_lr.shape)
+    print("lr shape is ", img_lr.shape)
     super_resolved_img = generator(img_lr)
 
     # Store the generated result
+    loguru_logger.info(f"Saving image to {output_path}")
     if device != "cpu":
         with torch.cuda.amp.autocast():
             if output_path is not None:
