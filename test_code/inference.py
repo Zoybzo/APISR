@@ -85,7 +85,7 @@ def super_resolve_img(
     # Store the generated result
     loguru_logger.info(f"Saving image to {output_path}")
     image = torchvision.transforms.ToPILImage()(super_resolved_img.cpu())
-    image.save(output_path)
+    image.convert("RGB").save(output_path)
     # if device != "cpu":
     #     with torch.cuda.amp.autocast():
     #         if output_path is not None:
